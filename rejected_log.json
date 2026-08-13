@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "timestamp": "2026-08-13T22:18:50.900796",
+    "contributor_uuid": "4cfe1445-aeeb-430d-8af4-c4566b0d7a5b",
+    "term": "ポリューションエントリー",
+    "translation": "〔示範翻譯〕污染條目",
+    "reason": "pollution_detected"
+  }
+]
