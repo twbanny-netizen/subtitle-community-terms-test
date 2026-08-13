@@ -239,6 +239,15 @@ def log_rejection(contributor_uuid, term, translation, reason):
     rejected_log.append(rejection_entry)
     save_json_file(REJECTED_LOG_PATH, rejected_log)
 
+def set_github_output(name, value):
+    """Set GitHub Actions output."""
+    if os.environ.get("GITHUB_ACTIONS"):
+        with open(os.environ.get("GITHUB_OUTPUT"), "a") as fh:
+            print(f"{name}={value}", file=fh)
+    else:
+        # For local testing
+        print(f"{name}={value}")
+
 def main():
     """Main validation logic - only validates PR changes and removes polluted entries immediately."""
     # Load data
@@ -246,8 +255,8 @@ def main():
     official_data = load_json_file(OFFICIAL_DICT_PATH) or {}
     
     if pending_data is None:
-        print("result=failure")
-        print("message=Failed to load pending_candidates.json")
+        set_github_output("result", "failure")
+        set_github_output("message", "Failed to load pending_candidates.json")
         return 1
     
     # Get the keys that were changed in this PR
@@ -326,8 +335,8 @@ def main():
     
     # If all changed entries were rejected, fail the PR
     if len(valid_entries) == 0 and len(rejected_entries) > 0:
-        print("result=failure")
-        print(f"message=All {len(rejected_entries)} changed entries failed validation")
+        set_github_output("result", "failure")
+        set_github_output("message", f"All {len(rejected_entries)} changed entries failed validation")
         return 1
     
     # If some entries were rejected but others are valid, proceed with valid ones
@@ -378,8 +387,8 @@ def main():
     if len(rejected_entries) > 0:
         message += f" {len(rejected_entries)} entries were rejected and removed."
     
-    print("result=success")
-    print(f"message={message}")
+    set_github_output("result", "success")
+    set_github_output("message", message)
     return 0
 
 if __name__ == "__main__":
